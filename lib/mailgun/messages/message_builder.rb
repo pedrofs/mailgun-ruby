@@ -8,6 +8,7 @@ module Mailgun
   #
   # See the Github documentation for full examples.
   class MessageBuilder
+    MAILGUN_VARIABLE_HEADER = 'X-Mailgun-Variable'
 
     attr_reader :message, :counters
 
@@ -107,6 +108,18 @@ module Mailgun
     # @return [void]
     def body_html(html_body = nil)
       set_multi_simple(:html, html_body)
+    end
+
+    # Set the mailgun template to get used
+    #
+    # @param [String] name The template name/id
+    # @param [Hash] variables The template variables if needed
+    # @return [void]
+    def template(name, variables = {})
+      raise ArgumentError, "Name can't be nil" if name.nil?
+
+      set_multi_simple('template', name)
+      header(MAILGUN_VARIABLE_HEADER, variables) unless variables.empty?
     end
 
     # Deprecated: Please use "body_html" instead.
@@ -387,7 +400,7 @@ module Mailgun
         full_name = vars['full_name']
       elsif vars['first'] || vars['last']
         full_name = "#{vars['first']} #{vars['last']}".strip
-      end 
+      end
 
       return "'#{full_name}' <#{address}>" if defined?(full_name)
       address

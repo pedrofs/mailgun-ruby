@@ -597,3 +597,53 @@ describe 'The method message_id' do
     expect(@mb_obj.message.has_key?('h:Message-Id')).to eq(false)
   end
 end
+
+describe 'The method template' do
+  let(:message_builder) { Mailgun::MessageBuilder.new }
+
+  context 'when passing empty variables' do
+    before do
+      message_builder.template('test')
+    end
+
+    it 'has the template key' do
+      expect(message_builder.message.has_key?('template')).to eq(true)
+    end
+
+    it 'returns template equals to test' do
+      expect(message_builder.message['template']).to eq(['test'])
+    end
+
+    it 'returns false for X-Mailgun-Variable header' do
+      expect(message_builder.message.has_key?('h:X-Mailgun-Variable')).to eq(false)
+    end
+  end
+
+  context 'when passing variables' do
+    before do
+      message_builder.template('test', { foo: 'bar' })
+    end
+
+    it 'has the template key' do
+      expect(message_builder.message.has_key?('template')).to eq(true)
+    end
+
+    it 'returns template equals to test' do
+      expect(message_builder.message['template']).to eq(['test'])
+    end
+
+    it 'returns true for X-Mailgun-Variable header' do
+      expect(message_builder.message.has_key?('h:X-Mailgun-Variable')).to eq(true)
+    end
+
+    it 'returns the right json for the header' do
+      expect(message_builder.message['h:X-Mailgun-Variable']).to eq("{\"foo\":\"bar\"}")
+    end
+  end
+
+  context 'when template name is nil' do
+    it 'raises argument error exception' do
+      expect { message_builder.template(nil) }.to raise_error(ArgumentError)
+    end
+  end
+end
