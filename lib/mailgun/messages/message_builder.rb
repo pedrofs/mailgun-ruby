@@ -8,7 +8,7 @@ module Mailgun
   #
   # See the Github documentation for full examples.
   class MessageBuilder
-    MAILGUN_VARIABLE_HEADER = 'X-Mailgun-Variable'
+    MAILGUN_VARIABLE_HEADER = 'X-Mailgun-Variables'
 
     attr_reader :message, :counters
 
